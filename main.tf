@@ -60,6 +60,11 @@ resource "aws_autoscaling_group" "main" {
     id      = aws_launch_template.main.id
     version = "$Latest"
   }
+  tag {
+    key                 = "Name"
+    value               = local.name_prefix
+    propagate_at_launch = true
+  }
 }
 
 
