@@ -44,7 +44,7 @@ resource "aws_launch_template" "main" {
   tag_specifications {
     resource_type = "instance"
     tags          = {
-      Name = "${local.name_prefix}-lt"
+      Name = "${local.name_prefix}"
     }
   }
 
