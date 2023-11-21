@@ -32,23 +32,34 @@ resource "aws_security_group" "main" {
 
 
 resource "aws_launch_template" "main" {
-  name = "${local.name_prefix}-lt"
-  image_id = data.aws_ami.ami.id
-  instance_type = var.instance_type
+  name                   = "${local.name_prefix}"
+  image_id               = data.aws_ami.ami.id
+  instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.main.id]
-  user_data = base64encode(templatefile("${path.module}/user_data.sh",
+  user_data              = base64encode(templatefile("${path.module}/user_data.sh",
     {
-    component = var.component
-  }))
+      component = var.component
+    }))
 
   tag_specifications {
     resource_type = "instance"
-    tags = {
+    tags          = {
       Name = "${local.name_prefix}-lt"
     }
   }
 
 }
+resource "aws_autoscaling_group" "main" {
+  name                = "${local.name_prefix}-asg"
+  vpc_zone_identifier = var.subnet_ids
+  desired_capacity    = var.desired_capacity
+  max_size            = var.max_size
+  min_size            = var.min_size
 
+  launch_template {
+    id      = aws_launch_template.main.id
+    version = "$Latest"
+  }
+}
 
 
