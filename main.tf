@@ -75,4 +75,11 @@ resource "aws_route53_record" "main" {
   records = [var.alb_name]
 }
 
+resource "aws_lb_target_group" "main" {
+  name     = "${local.name_prefix}-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+}
+
 
