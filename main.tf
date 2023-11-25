@@ -55,7 +55,7 @@ resource "aws_autoscaling_group" "main" {
   desired_capacity    = var.desired_capacity
   max_size            = var.max_size
   min_size            = var.min_size
-  target_group_arns = [aws_lb_target_group.main.arn]
+  target_group_arns   = [aws_lb_target_group.main.arn]
 
   launch_template {
     id      = aws_launch_template.main.id
@@ -93,7 +93,16 @@ resource "aws_lb_listener_rule" "main" {
   }
   condition {
     host_header {
-      values = ["${var.component}-${var.env}-learntechnology.tech"]
+      values = [var.component == "frontend" ? "${var.env}-learntechnology.tech" : "${var.component}-${var.env}-learntechnology.tech"]
     }
   }
+}
+
+
+resource "aws_lb_target_group" "public" {
+  count = var.component == frontend ? 1 : 0
+  name     = "${local.name_prefix}-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
 }
