@@ -102,7 +102,31 @@ resource "aws_lb_listener_rule" "main" {
 resource "aws_lb_target_group" "public" {
   count = var.component == "frontend" ? 1 : 0
   name     = "${local.name_prefix}-tg-public-alb"
-  port     = 80
+  port     = var.port
+  target_type = "ip"
   protocol = "HTTP"
-  vpc_id   = var.vpc_id
+  vpc_id   = var.default_vpc_id
+}
+
+resource "aws_lb_target_group_attachment" "public" {
+  count = var.component == "frontend" ? length(tolist(data.dns_a_record_set.private_alb.addrs)) : 0
+  target_group_arn = aws_lb_target_group.public[0].arn
+  target_id        = element(tolist(data.dns_a_record_set.private_alb.addrs), count.index)
+  port = 80
+  availability_zone = "all"
+}
+
+resource "aws_lb_listener_rule" "public_alb" {
+  count = var.component == "frontend" ? 1 : 0
+  listener_arn = var.public_listener
+  priority     = var.listener_priority
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.public[0].arn
+  }
+  condition {
+    host_header {
+      values = ["${var.env}-learntechnology.tech"]
+    }
+  }
 }

@@ -18,3 +18,4 @@ variable "private_listener" {}
 variable "public_alb_name" {}
 variable "public_listener" {}
 variable "listener_priority" {}
+variable "default_vpc_id" {}
