@@ -94,7 +94,7 @@ resource "aws_lb_listener_rule" "main" {
   condition {
     host_header {
       values = [
-        var.component == "frontend" ? "${var.env}-learntechnology.tech" : "${var.component}-${var.env}-learntechnology.tech"
+        var.component == "frontend" ? "${var.env}.learntechnology.tech" : "${var.component}-${var.env}.learntechnology.tech"
       ]
     }
   }
@@ -128,7 +128,7 @@ resource "aws_lb_listener_rule" "public_alb" {
   }
   condition {
     host_header {
-      values = ["${var.env}-learntechnology.tech"]
+      values = ["${var.env}.learntechnology.tech"]
     }
   }
 }
